@@ -18,20 +18,23 @@ mongoose.connect('mongodb://localhost/recipeApp')
         (err) ? console.log(`Ha habido un error`, err) : console.log(`Se ha guardado una receta, ${recipe}`) 
       });
       
-      Recipe.insertMany(data)
-      console.log(`You have saved: ${data.title}`)
-      Recipe.updateOne({title: 'Rigatoni alla Genovese'}, {duration: 100})
-      .then(() => { console.log(`Rigatoni updated!`) })
-      
-      .catch((err) => { console.log(`Error de insertMany`)});
-      
-      Recipe.deleteOne({title: 'Carrot Cake'})
+    Recipe.insertMany(data)
+      .catch(err => console.log(`Error de insertMany`, err))
       .then(() => {
-        console.log(`Carrot Deleted`);
-        mongoose.connection.close();
-        console.log('Close!')
+        console.log(`You have saved: ${data}`)
+        Recipe.updateOne({title: 'Rigatoni alla Genovese'}, {duration: 100})
+        .then(() => { 
+          console.log(`Rigatoni updated!`)
+          Recipe.deleteOne({title: 'Carrot Cake'})
+          .then(() => {    
+            console.log(`Carrot Deleted`);
+            mongoose.connection.close();
+            console.log('Close!')
+          })
+          .catch(err => console.log(`Hubo un error eliminando carrot`, err));
+        })
+        .catch(err => console.log(`Error de Rigatoni`, err));
       })
-      .catch((err) => console.log(`Hubo un error eliminando carrot`))
-    
+
     })
     .catch(err => console.error('Error connecting to mongo', err));
